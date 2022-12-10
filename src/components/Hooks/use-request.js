@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 const useRequest = (configReq, getReqData) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const request = async () => {
+  const request = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -18,7 +18,7 @@ const useRequest = (configReq, getReqData) => {
       setError(err.message || "Something went wrong!");
     }
     setIsLoading(false);
-  };
+  }, [configReq, getReqData]);
   return {
     isLoading,
     error,
