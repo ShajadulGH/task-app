@@ -1,13 +1,24 @@
 import { useState, useCallback } from "react";
-const useRequest = (configReq, getReqData) => {
+const useRequest = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const request = useCallback(async () => {
+  const request = useCallback(async (configReq, getReqData) => {
+    console.log(configReq.body);
+    console.log(configReq.url);
+    console.log(configReq.headers);
+    console.log(configReq.method);
+
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch(configReq.url);
+      const response = await fetch(configReq.url, {
+        method: configReq.method ? configReq.method : "GET",
+        headers: configReq.headers ? configReq.headers : {},
+        body: JSON.stringify(configReq.body)
+          ? JSON.stringify(configReq.body)
+          : null,
+      });
       if (!response.ok) {
         throw new Error("Request failed!");
       }
@@ -18,7 +29,7 @@ const useRequest = (configReq, getReqData) => {
       setError(err.message || "Something went wrong!");
     }
     setIsLoading(false);
-  }, [configReq, getReqData]);
+  }, []);
   return {
     isLoading,
     error,

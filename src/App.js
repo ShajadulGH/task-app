@@ -1,31 +1,26 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import Tasks from "./components/Tasks/Tasks";
 import NewTask from "./components/NewTask/NewTask";
 import useRequest from "./components/Hooks/use-request";
 function App() {
   const [tasks, setTasks] = useState([]);
-  const urlHolder = useMemo(() => {
-    return {
+
+  const { isLoading, error, request: fetchTasks } = useRequest();
+  useEffect(() => {
+    const urlHolder = {
       url: "https://task-app-4d609-default-rtdb.firebaseio.com/tasks.json",
     };
-  }, []);
-  const gotData = useCallback((data) => {
-    console.log(data);
-    const loadedTasks = [];
+    const gotData = (data) => {
+      console.log(data);
+      const loadedTasks = [];
 
-    for (const taskKey in data) {
-      loadedTasks.push({ id: taskKey, text: data[taskKey].text });
-    }
-    setTasks(loadedTasks);
-  }, []);
-  const {
-    isLoading,
-    error,
-    request: fetchTasks,
-  } = useRequest(urlHolder, gotData);
-  useEffect(() => {
-    fetchTasks();
+      for (const taskKey in data) {
+        loadedTasks.push({ id: taskKey, text: data[taskKey].text });
+      }
+      setTasks(loadedTasks);
+    };
+    fetchTasks(urlHolder, gotData);
   }, [fetchTasks]);
   const taskAddHandler = (task) => {
     setTasks((prevTasks) => prevTasks.concat(task));
